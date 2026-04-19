@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mia Sommer – Lesen | Souvenirs d'enfance</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f5f4f0; color: #1a1a18; min-height: 100vh; padding: 1.5rem 1rem 3rem; }
+  .container { max-width: 760px; margin: 0 auto; }
+
+  .header { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; border: 0.5px solid #ddd; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .header h1 { font-size: 17px; font-weight: 600; color: #1a1a18; }
+  .header p { font-size: 13px; color: #666; margin-top: 2px; }
+  .score-box { text-align: center; }
+  .score-num { font-size: 28px; font-weight: 600; color: #1a1a18; }
+  .score-label { font-size: 11px; color: #888; }
+
+  .progress-bar { height: 5px; background: #e8e7e2; border-radius: 3px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: #534AB7; border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+
+  .text-card { background: #fff; border: 0.5px solid #ddd; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.75rem; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+  .text-card-title { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem; }
+  .interview-q { font-size: 14px; font-weight: 600; color: #1a1a18; margin-top: 1.1rem; margin-bottom: 0.4rem; }
+  .interview-a { font-size: 14px; color: #2c2c2a; line-height: 1.75; }
+  .hl { background: #EEEDFE; color: #3C3489; border-radius: 3px; padding: 1px 4px; font-weight: 600; }
+
+  .section { margin-bottom: 2.25rem; }
+  .section-title { font-size: 15px; font-weight: 600; color: #1a1a18; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 0.5px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+  .section-pts { font-size: 13px; font-weight: 400; color: #888; }
+
+  .rft-row { display: grid; grid-template-columns: 1fr 96px; gap: 12px; align-items: start; margin-bottom: 10px; padding: 12px; background: #fff; border: 0.5px solid #ddd; border-radius: 8px; }
+  .rft-question { font-size: 14px; color: #1a1a18; line-height: 1.5; }
+  .rft-hint { margin-top: 6px; font-size: 12px; color: #555; font-style: italic; display: none; }
+  .rft-btns { display: flex; flex-direction: column; gap: 5px; }
+  .rft-btn { font-size: 13px; padding: 5px 8px; border: 0.5px solid #bbb; border-radius: 6px; background: transparent; color: #1a1a18; cursor: pointer; text-align: center; transition: all 0.15s; font-family: inherit; }
+  .rft-btn:hover { background: #f0efe8; }
+  .rft-btn.sel-R { background: #EAF3DE; border-color: #639922; color: #27500A; font-weight: 600; }
+  .rft-btn.sel-F { background: #FCEBEB; border-color: #E24B4A; color: #791F1F; font-weight: 600; }
+  .rft-btn.sel-Q { background: #FAEEDA; border-color: #BA7517; color: #633806; font-weight: 600; }
+  .rft-btn.correct { background: #EAF3DE !important; border-color: #639922 !important; color: #27500A !important; }
+  .rft-btn.wrong { background: #FCEBEB !important; border-color: #E24B4A !important; color: #791F1F !important; }
+
+  .q-wrap { margin-bottom: 14px; }
+  .q-wrap label { font-size: 14px; color: #1a1a18; display: block; margin-bottom: 5px; }
+  .q-wrap input { width: 100%; padding: 8px 10px; border: 0.5px solid #bbb; border-radius: 7px; font-size: 14px; font-family: inherit; color: #1a1a18; background: #fff; transition: border-color 0.15s, box-shadow 0.15s; }
+  .q-wrap input:focus { outline: none; border-color: #534AB7; box-shadow: 0 0 0 3px #EEEDFE; }
+  .q-wrap input.inp-ok { border-color: #639922; background: #EAF3DE; color: #27500A; }
+  .q-wrap input.inp-ko { border-color: #E24B4A; }
+  .q-fb { font-size: 12px; margin-top: 4px; display: none; }
+  .q-fb.show { display: block; }
+  .q-fb.ok { color: #3B6D11; }
+  .q-fb.ko { color: #A32D2D; }
+
+  .c-wrap { margin-bottom: 10px; padding: 12px; border: 0.5px solid #ddd; border-radius: 8px; background: #fff; }
+  .c-wrap label { font-size: 14px; color: #1a1a18; display: block; margin-bottom: 7px; }
+  .c-wrap select { width: 100%; padding: 8px 10px; border: 0.5px solid #bbb; border-radius: 7px; font-size: 14px; font-family: inherit; color: #1a1a18; background: #fff; }
+  .c-wrap select.inp-ok { border-color: #639922; background: #EAF3DE; color: #27500A; }
+  .c-wrap select.inp-ko { border-color: #E24B4A; }
+
+  .check-btn { padding: 8px 18px; border: 0.5px solid #bbb; border-radius: 7px; background: transparent; color: #1a1a18; font-size: 14px; font-family: inherit; cursor: pointer; margin-top: 10px; transition: background 0.15s; }
+  .check-btn:hover { background: #eeede8; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0.5rem; }
+  .validate-btn { padding: 10px 24px; background: #534AB7; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-family: inherit; cursor: pointer; transition: background 0.15s; }
+  .validate-btn:hover { background: #3C3489; }
+  .reset-btn { padding: 10px 24px; background: transparent; border: 0.5px solid #bbb; color: #555; border-radius: 8px; font-size: 14px; font-family: inherit; cursor: pointer; transition: background 0.15s; }
+  .reset-btn:hover { background: #eeede8; }
+
+  .results { display: none; padding: 1.1rem 1.25rem; border-radius: 10px; text-align: center; margin-top: 1.5rem; }
+  .results.show { display: block; }
+  .results.great { background: #EAF3DE; color: #27500A; }
+  .results.ok { background: #FAEEDA; color: #633806; }
+  .results.try { background: #FCEBEB; color: #791F1F; }
+  .results h2 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .results p { font-size: 14px; }
+
+  /* Corrigé */
+  .corrige-toggle-wrap { margin: 2.5rem 0 0; border-top: 0.5px solid #ddd; padding-top: 1.5rem; }
+  .corrige-toggle-btn { display: flex; align-items: center; gap: 10px; background: #fff8e1; border: 0.5px solid #BA7517; border-radius: 8px; padding: 10px 16px; cursor: pointer; font-size: 14px; font-family: inherit; color: #633806; font-weight: 600; width: 100%; text-align: left; transition: background 0.15s; }
+  .corrige-toggle-btn:hover { background: #FAEEDA; }
+  .corrige-toggle-btn .arrow { margin-left: auto; font-size: 16px; transition: transform 0.25s; }
+  .corrige-toggle-btn.open .arrow { transform: rotate(180deg); }
+  .pin-wrap { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .pin-wrap input { padding: 7px 10px; border: 0.5px solid #bbb; border-radius: 6px; font-size: 14px; font-family: inherit; width: 130px; }
+  .pin-wrap input:focus { outline: none; border-color: #BA7517; box-shadow: 0 0 0 3px #fff8e1; }
+  .pin-wrap button { padding: 7px 14px; background: #633806; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-family: inherit; cursor: pointer; }
+  .pin-wrap button:hover { background: #412402; }
+  .pin-error { font-size: 12px; color: #A32D2D; margin-top: 6px; display: none; }
+  .corrige-body { display: none; margin-top: 1.25rem; }
+  .corrige-body.show { display: block; }
+  .corrige-section { margin-bottom: 1.5rem; }
+  .corrige-section h3 { font-size: 13px; font-weight: 600; color: #633806; background: #FAEEDA; border-radius: 6px; padding: 6px 12px; margin-bottom: 10px; }
+  .corrige-row { display: flex; gap: 10px; align-items: flex-start; padding: 8px 12px; border-radius: 6px; font-size: 14px; background: #fff; border: 0.5px solid #eee; margin-bottom: 6px; line-height: 1.5; }
+  .badge { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+  .badge-R { background: #EAF3DE; color: #27500A; }
+  .badge-F { background: #FCEBEB; color: #791F1F; }
+  .num { min-width: 20px; font-weight: 600; color: #534AB7; flex-shrink: 0; margin-top: 1px; }
+  .corrige-q { color: #555; font-size: 13px; }
+  .corrige-a { color: #1a1a18; font-weight: 600; margin-top: 1px; }
+  .corrige-cite { font-size: 12px; color: #888; font-style: italic; margin-top: 2px; }
+
+  @media (max-width: 500px) {
+    .rft-row { grid-template-columns: 1fr; }
+    .rft-btns { flex-direction: row; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div>
+      <h1>Mia Sommer — Lesen</h1>
+      <p>Souvenirs d'enfance · Niveau secondaire 1</p>
+    </div>
+    <div class="score-box">
+      <div class="score-num" id="totalScore">0 / 12</div>
+      <div class="score-label">points</div>
+    </div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+  <div class="text-card">
+    <div class="text-card-title">Texte — Interview</div>
+    <p class="interview-q">* Wie erinnerst du dich an deine Kindheit?</p>
+    <p class="interview-a">– Ich <span class="hl">erinnere mich</span> sehr gern an meine <span class="hl">Kindheit</span>! Die Kindheit war für mich eine wirklich schöne Zeit. <span class="hl">Früher</span> hatten wir kein <span class="hl">Handy</span> und kein Internet. <span class="hl">Als</span> ich zehn Jahre alt war, spielten wir draußen bis es dunkel wurde. Wir hatten so viel Freiheit! <span class="hl">Heute</span> finde ich es manchmal schade, dass die Kinder so viel Zeit vor dem Bildschirm verbringen. Die Welt hat <span class="hl">sich</span> wirklich sehr <span class="hl">verändert</span>.</p>
+    <p class="interview-q">* Was war dein liebstes Hobby als Kind?</p>
+    <p class="interview-a">– Ich liebte die <span class="hl">Mode</span>! <span class="hl">Als</span> ich zwölf war, schneiderte ich mit meiner Großmutter zusammen Kleider für meine Puppen. Ich <span class="hl">wählte</span> immer die buntesten Stoffe. Das war manchmal <span class="hl">anstrengend</span>, weil ich sehr perfekt sein wollte, aber das <span class="hl">Gefühl</span> am Ende – wenn das Kleid fertig war – war wunderschön. <span class="hl">Heute</span> arbeite ich als Lehrerin, aber ich nähe noch immer gern in meiner Freizeit.</p>
+    <p class="interview-q">* Hattest du als Kind viel Kontakt zu den Medien?</p>
+    <p class="interview-a">– <span class="hl">Früher</span> gab es nur drei Fernsehsender und wir durften nur eine Stunde pro Tag fernsehen. Die <span class="hl">Medien</span> spielten eine viel kleinere Rolle als <span class="hl">heute</span>. <span class="hl">Als</span> meine Eltern mir das erste Mal erlaubten, einen Film allein zu <span class="hl">wählen</span>, war ich so <span class="hl">total glücklich</span>! Heute sind die Medien überall. Manchmal denke ich, dass das Leben <span class="hl">früher</span> einfacher war – aber natürlich vermisse ich das <span class="hl">Handy</span> nicht wirklich!</p>
+    <p class="interview-q">* Was war dein größter Wunsch als Kind?</p>
+    <p class="interview-a">– <span class="hl">Als</span> ich klein war, wollte ich immer Lehrerin werden. Ich <span class="hl">erinnere mich</span> noch genau an den Tag, <span class="hl">als</span> meine Lehrerin mir sagte, ich sei sehr kreativ. Das <span class="hl">Gefühl</span> war unbeschreiblich! <span class="hl">Heute</span> lebe ich meinen Traum. Es ist manchmal <span class="hl">anstrengend</span>, aber ich liebe meinen Beruf. Die <span class="hl">Kindheit</span> hat mich sehr geprägt – und das ist gut so.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">A) Richtig, falsch oder nicht gesagt? <span class="section-pts">/4 points</span></div>
+    <div id="rftRows"></div>
+    <button class="check-btn" onclick="checkA()">Vérifier la section A</button>
+  </div>
+
+  <div class="section">
+    <div class="section-title">B) Antworte kurz auf Französisch <span class="section-pts">/5 points</span></div>
+    <div id="secB"></div>
+    <button class="check-btn" onclick="checkB()">Vérifier la section B</button>
+  </div>
+
+  <div class="section">
+    <div class="section-title">C) Finde einen synonymen Satz im Text <span class="section-pts">/3 points</span></div>
+    <div id="secC"></div>
+    <button class="check-btn" onclick="checkC()">Vérifier la section C</button>
+  </div>
+
+  <div class="actions">
+    <button class="validate-btn" onclick="validateAll()">Tout valider</button>
+    <button class="reset-btn" onclick="resetAll()">Recommencer</button>
+  </div>
+
+  <div class="results" id="resultsBanner">
+    <h2 id="resultsTitle"></h2>
+    <p id="resultsMsg"></p>
+  </div>
+
+  <!-- CORRIGE ENSEIGNANT -->
+  <div class="corrige-toggle-wrap">
+    <button class="corrige-toggle-btn" id="corrigeBtn" onclick="toggleCorrige()">
+      🔒 Corrigé enseignant (accès protégé)
+      <span class="arrow">▼</span>
+    </button>
+
+    <div id="pinSection" style="display:none;">
+      <div class="pin-wrap">
+        <input type="password" id="pinInput" placeholder="Code PIN" onkeydown="if(event.key==='Enter')checkPin()" />
+        <button onclick="checkPin()">Accéder</button>
+      </div>
+      <div class="pin-error" id="pinError">Code incorrect. Réessaie.</div>
+    </div>
+
+    <div class="corrige-body" id="corrigeBody">
+
+      <div class="corrige-section">
+        <h3>A) Richtig / Falsch / ? — Corrigé</h3>
+        <div class="corrige-row">
+          <span class="badge badge-F">F</span>
+          <div><div class="corrige-q">1. Mia hatte als Kind ein Handy.</div><div class="corrige-cite">Justification : « Früher hatten wir kein Handy »</div></div>
+        </div>
+        <div class="corrige-row">
+          <span class="badge badge-R">R</span>
+          <div><div class="corrige-q">2. Mia hat ihren Kindheitstraum erfüllt.</div><div class="corrige-cite">Justification : « Heute lebe ich meinen Traum »</div></div>
+        </div>
+        <div class="corrige-row">
+          <span class="badge badge-F">F</span>
+          <div><div class="corrige-q">3. Mia durfte früher viel fernsehen.</div><div class="corrige-cite">Justification : « wir durften nur eine Stunde pro Tag fernsehen »</div></div>
+        </div>
+        <div class="corrige-row">
+          <span class="badge badge-F">F</span>
+          <div><div class="corrige-q">4. Das Nähen war für Mia immer einfach.</div><div class="corrige-cite">Justification : « Das war manchmal anstrengend »</div></div>
+        </div>
+      </div>
+
+      <div class="corrige-section">
+        <h3>B) Réponses en français — Corrigé</h3>
+        <div class="corrige-row"><span class="num">1.</span><div><div class="corrige-q">Was ist Mias Beruf?</div><div class="corrige-a">Lehrerin → enseignante / professeure (toute réponse synonyme acceptée)</div></div></div>
+        <div class="corrige-row"><span class="num">2.</span><div><div class="corrige-q">Was liebte Mia als Kind besonders?</div><div class="corrige-a">Die Mode → la mode / la couture</div></div></div>
+        <div class="corrige-row"><span class="num">3.</span><div><div class="corrige-q">Wie viele Fernsehsender gab es früher?</div><div class="corrige-a">Drei → trois</div></div></div>
+        <div class="corrige-row"><span class="num">4.</span><div><div class="corrige-q">Was hat Mias Lehrerin ihr gesagt?</div><div class="corrige-a">Sie war sehr kreativ → elle était très créative</div></div></div>
+        <div class="corrige-row"><span class="num">5.</span><div><div class="corrige-q">Wie beschreibt Mia ihr heutiges Leben?</div><div class="corrige-a">Manchmal anstrengend → parfois fatigant / difficile</div></div></div>
+      </div>
+
+      <div class="corrige-section">
+        <h3>C) Synonymes dans le texte — Corrigé</h3>
+        <div class="corrige-row"><span class="num">1.</span><div><div class="corrige-q">Die Welt hat sich gewandelt.</div><div class="corrige-a">→ « Die Welt hat sich wirklich sehr verändert. »</div></div></div>
+        <div class="corrige-row"><span class="num">2.</span><div><div class="corrige-q">Mia erlebte als Kind einen unvergesslichen Moment.</div><div class="corrige-a">→ « Das Gefühl war unbeschreiblich! »</div></div></div>
+        <div class="corrige-row"><span class="num">3.</span><div><div class="corrige-q">Das Leben war früher weniger kompliziert.</div><div class="corrige-a">→ « Das Leben war früher einfacher. »</div></div></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<script>
+const PIN = "1234";
+let pinVisible = false;
+
+function toggleCorrige() {
+  const btn = document.getElementById('corrigeBtn');
+  const body = document.getElementById('corrigeBody');
+  if (body.classList.contains('show')) {
+    body.classList.remove('show');
+    btn.classList.remove('open');
+    document.getElementById('pinSection').style.display = 'none';
+    pinVisible = false;
+  } else if (!pinVisible) {
+    pinVisible = true;
+    btn.classList.add('open');
+    document.getElementById('pinSection').style.display = 'block';
+    setTimeout(() => document.getElementById('pinInput').focus(), 50);
+  }
+}
+
+function checkPin() {
+  const val = document.getElementById('pinInput').value;
+  if (val === PIN) {
+    document.getElementById('pinSection').style.display = 'none';
+    document.getElementById('corrigeBody').classList.add('show');
+    document.getElementById('pinError').style.display = 'none';
+  } else {
+    document.getElementById('pinError').style.display = 'block';
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinInput').focus();
+  }
+}
+
+const rftData = [
+  { q: "1. Mia hatte als Kind ein Handy.", ans: "F", hint: "« Früher hatten wir kein Handy »" },
+  { q: "2. Mia hat ihren Kindheitstraum erfüllt.", ans: "R", hint: "« Heute lebe ich meinen Traum »" },
+  { q: "3. Mia durfte früher viel fernsehen.", ans: "F", hint: "« wir durften nur eine Stunde pro Tag fernsehen »" },
+  { q: "4. Das Nähen war für Mia immer einfach.", ans: "F", hint: "« Das war manchmal anstrengend »" },
+];
+const bData = [
+  { q: "1. Was ist Mias Beruf?", keys: ["lehrerin","lehrer","prof","enseignante","institutrice","professeure"], model: "Lehrerin (enseignante)" },
+  { q: "2. Was liebte Mia als Kind besonders?", keys: ["mode","couture","nähen","nähte","kleid"], model: "Die Mode / la couture" },
+  { q: "3. Wie viele Fernsehsender gab es früher?", keys: ["drei","3","trois"], model: "Drei (trois)" },
+  { q: "4. Was hat Mias Lehrerin ihr gesagt?", keys: ["kreativ","créativ","creative","creativ"], model: "Sie war sehr kreativ (très créative)" },
+  { q: "5. Wie beschreibt Mia ihr heutiges Leben?", keys: ["anstrengend","difficile","fatiguant","dur"], model: "Manchmal anstrengend (parfois fatigant)" },
+];
+const cData = [
+  { q: "1) Die Welt hat sich gewandelt.", opts: ["Die Welt hat sich wirklich sehr verändert.", "Ich liebte die Mode!", "Wir hatten so viel Freiheit!"], ans: 0 },
+  { q: "2) Mia erlebte als Kind einen unvergesslichen Moment.", opts: ["Die Kindheit war für mich eine wirklich schöne Zeit.", "Das Gefühl war unbeschreiblich!", "Wir durften nur eine Stunde fernsehen."], ans: 1 },
+  { q: "3) Das Leben war früher weniger kompliziert.", opts: ["Früher gab es nur drei Fernsehsender.", "Das Leben war früher einfacher.", "Heute sind die Medien überall."], ans: 1 },
+];
+
+let rftSel = Array(rftData.length).fill(null);
+let scores = { A:0, B:0, C:0 };
+let done = { A:false, B:false, C:false };
+
+function buildA() {
+  document.getElementById('rftRows').innerHTML = rftData.map((item, i) => `
+    <div class="rft-row">
+      <div>
+        <div class="rft-question">${item.q}</div>
+        <div class="rft-hint" id="hint-${i}">→ ${item.hint}</div>
+      </div>
+      <div class="rft-btns">
+        <button class="rft-btn" id="btn-R-${i}" onclick="selRFT(${i},'R')">Richtig</button>
+        <button class="rft-btn" id="btn-F-${i}" onclick="selRFT(${i},'F')">Falsch</button>
+        <button class="rft-btn" id="btn-Q-${i}" onclick="selRFT(${i},'?')">?</button>
+      </div>
+    </div>`).join('');
+}
+function selRFT(i, v) {
+  if (done.A) return;
+  rftSel[i] = v;
+  ['R','F','?'].forEach(x => {
+    document.getElementById(`btn-${x}-${i}`).className = 'rft-btn' + (v===x ? ` sel-${x==='?'?'Q':x}` : '');
+  });
+  updateProgress();
+}
+function checkA() {
+  if (done.A) return;
+  done.A = true;
+  let pts = 0;
+  rftData.forEach((item, i) => {
+    if (rftSel[i] === item.ans) pts++;
+    ['R','F','?'].forEach(x => {
+      const b = document.getElementById(`btn-${x}-${i}`);
+      if (x === item.ans) b.classList.add('correct');
+      else if (rftSel[i] === x) b.classList.add('wrong');
+    });
+    document.getElementById(`hint-${i}`).style.display = 'block';
+  });
+  scores.A = pts; updateTotal();
+}
+function buildB() {
+  document.getElementById('secB').innerHTML = bData.map((item, i) => `
+    <div class="q-wrap">
+      <label>${item.q}</label>
+      <input type="text" id="b-${i}" placeholder="Ta réponse en français…" />
+      <div class="q-fb" id="bf-${i}"></div>
+    </div>`).join('');
+}
+function checkB() {
+  if (done.B) return;
+  done.B = true;
+  let pts = 0;
+  bData.forEach((item, i) => {
+    const v = document.getElementById(`b-${i}`).value.toLowerCase().trim();
+    const ok = item.keys.some(k => v.includes(k));
+    const inp = document.getElementById(`b-${i}`);
+    const fb = document.getElementById(`bf-${i}`);
+    inp.disabled = true;
+    if (ok) { pts++; inp.classList.add('inp-ok'); fb.textContent='✓ Correct !'; fb.className='q-fb show ok'; }
+    else { inp.classList.add('inp-ko'); fb.textContent=`✗ Réponse attendue : ${item.model}`; fb.className='q-fb show ko'; }
+  });
+  scores.B = pts; updateTotal();
+}
+function buildC() {
+  document.getElementById('secC').innerHTML = cData.map((item, i) => `
+    <div class="c-wrap">
+      <label>${item.q}</label>
+      <select id="c-${i}">
+        <option value="-1">-- Wähle einen Satz --</option>
+        ${item.opts.map((o,j)=>`<option value="${j}">${o}</option>`).join('')}
+      </select>
+      <div class="q-fb" id="cf-${i}"></div>
+    </div>`).join('');
+}
+function checkC() {
+  if (done.C) return;
+  done.C = true;
+  let pts = 0;
+  cData.forEach((item, i) => {
+    const v = parseInt(document.getElementById(`c-${i}`).value);
+    const ok = v === item.ans;
+    const sel = document.getElementById(`c-${i}`);
+    const fb = document.getElementById(`cf-${i}`);
+    sel.disabled = true;
+    if (ok) { pts++; sel.classList.add('inp-ok'); fb.textContent='✓ Correct !'; fb.className='q-fb show ok'; }
+    else { sel.classList.add('inp-ko'); fb.textContent=`✗ Réponse correcte : « ${item.opts[item.ans]} »`; fb.className='q-fb show ko'; }
+  });
+  scores.C = pts; updateTotal();
+}
+function updateTotal() {
+  document.getElementById('totalScore').textContent = (scores.A+scores.B+scores.C)+' / 12';
+  updateProgress();
+}
+function updateProgress() {
+  const total = rftData.length+bData.length+cData.length;
+  const n = (done.A?rftData.length:rftSel.filter(x=>x!==null).length)+(done.B?bData.length:0)+(done.C?cData.length:0);
+  document.getElementById('progress').style.width = Math.round(n/total*100)+'%';
+}
+function validateAll() {
+  checkA(); checkB(); checkC();
+  const total = scores.A+scores.B+scores.C;
+  const banner = document.getElementById('resultsBanner');
+  banner.classList.add('show');
+  if (total>=10) { banner.className='results show great'; document.getElementById('resultsTitle').textContent='Sehr gut! '+total+'/12'; document.getElementById('resultsMsg').textContent='Ausgezeichnet! Du hast den Text sehr gut verstanden.'; }
+  else if (total>=7) { banner.className='results show ok'; document.getElementById('resultsTitle').textContent='Gut! '+total+'/12'; document.getElementById('resultsMsg').textContent='Pas mal ! Relis le texte pour améliorer ton score.'; }
+  else { banner.className='results show try'; document.getElementById('resultsTitle').textContent=total+'/12 — Noch einmal!'; document.getElementById('resultsMsg').textContent='Relis attentivement le texte et réessaie !'; }
+}
+function resetAll() {
+  rftSel=Array(rftData.length).fill(null); scores={A:0,B:0,C:0}; done={A:false,B:false,C:false};
+  document.getElementById('totalScore').textContent='0 / 12';
+  document.getElementById('progress').style.width='0%';
+  document.getElementById('resultsBanner').className='results';
+  buildA(); buildB(); buildC();
+}
+buildA(); buildB(); buildC();
+</script>
+</body>
+</html>
